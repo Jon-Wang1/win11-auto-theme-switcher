@@ -40,11 +40,10 @@ def main():
 
     vbs_path = startup_dir / "ThemeSwitcher.vbs"
 
-    python_exe = sys.executable
     main_script = project_dir / "main.py"
 
-    vbs_content = f'''CreateObject("WScript.Shell").Run """{python_exe}" "{main_script}""", 0, False
-'''
+    # Use py.exe launcher to avoid VBScript quote-escaping issues with paths
+    vbs_content = f'CreateObject("WScript.Shell").Run "py -3.13 ""{main_script}""", 0, False\n'
 
     vbs_path.write_text(vbs_content, encoding="utf-8")
     print(f"  Startup shortcut created: {vbs_path}")

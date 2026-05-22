@@ -135,14 +135,18 @@ def save(config: Config) -> None:
 
 
 def auto_detect_location() -> Optional[dict]:
-    """Detect location via IP geolocation using ip-api.com (free, no API key)."""
+    """Detect location via IP geolocation using ip-api.com (free, no API key).
+    Bypasses system proxy to get the real external IP, not the proxy exit node."""
     import json
     import urllib.request
 
     try:
         url = "http://ip-api.com/json/?fields=status,lat,lon,timezone,city,country"
         req = urllib.request.Request(url, headers={"User-Agent": "theme-switcher-win11/1.0"})
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        # Bypass proxy to get real IP location
+        proxy_handler = urllib.request.ProxyHandler({})
+        opener = urllib.request.build_opener(proxy_handler)
+        with opener.open(req, timeout=10) as resp:
             data = json.loads(resp.read().decode("utf-8"))
         if data.get("status") != "success":
             return None
