@@ -123,13 +123,12 @@ class Scheduler:
             return
 
         from theme_switcher.theme import get_current_theme
-        from theme_switcher.solar import calculate_next_transition
+        from theme_switcher.solar import get_theme_for_now
 
-        correct = calculate_next_transition(config, now)
-        if correct is None:
+        target_theme = get_theme_for_now(config, now)
+        if target_theme is None:
             return
 
-        target_theme, _ = correct
         current = get_current_theme()
 
         if current != target_theme:
