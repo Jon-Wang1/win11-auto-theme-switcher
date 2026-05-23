@@ -42,8 +42,13 @@ def main():
 
     main_script = project_dir / "main.py"
 
-    # Use py.exe launcher to avoid VBScript quote-escaping issues with paths
-    vbs_content = f'CreateObject("WScript.Shell").Run "py -3.13 ""{main_script}""", 0, False\n'
+    # Find py.exe launcher - use full path because user PATH may not be
+    # available when Startup folder items execute at logon
+    py_launcher = Path(sys.exec_prefix).parent / "Launcher" / "py.exe"
+    if not py_launcher.exists():
+        py_launcher = "py"
+
+    vbs_content = f'CreateObject("WScript.Shell").Run "{py_launcher} -3.13 ""{main_script}""", 0, False\n'
 
     vbs_path.write_text(vbs_content, encoding="utf-8")
     print(f"  Startup shortcut created: {vbs_path}")
